@@ -7,24 +7,17 @@ object day05 extends App {
 
   def solveDay(day: Int, test: Boolean = false): (BigInt, BigInt) = {
 
+    // magic numbers to explicitly add each implicit SDMap above and below the given mappings
     val magicMinimum = BigInt("-1")
     val magicMaximum = BigInt("5000000000")
 
+    // read the data
     val inp: String = readDay(day, test, year = 2023)
     val sectionSeparator: String = "(\r*\n){2,}"
     val sections: Array[String] = sectionSeparator.r.split(inp)
-
     val seeds = " ".r.split(sections.head).tail.map(BigInt(_))
-    val seedRangeStarts = seeds.zipWithIndex.flatMap(s => {
-      if (s._2 % 2 == 0) Some(s._1) else None
-    })
-    val seedRangeLengths = seeds.zipWithIndex.flatMap(s => {
-      if (s._2 % 2 == 1) Some(s._1) else None
-    })
-    val seeds2: Page = Page(seedRangeStarts.zip(seedRangeLengths).map(sl => {
-      SDMap(Seq(sl._1, sl._1, sl._2))
-    }))
 
+    // coerce each of the sections in a Page
     val seedToSoil: Page = Page("\r*\n".r.split(sections(1)).tail.
       map(line => SDMap(" ".r.split(line).map(BigInt(_))))).addMinMax(magicMinimum, magicMaximum)
 
@@ -46,7 +39,7 @@ object day05 extends App {
     val humidityToLocation: Page = Page("\r*\n".r.split(sections(7)).tail.
       map(line => SDMap(" ".r.split(line).map(BigInt(_))))).addMinMax(magicMinimum, magicMaximum)
 
-
+    // map the seeds through each Page of the Almanac
     val locations = seeds.
       map(seedToSoil.mapSource).
       map(soilToFertiliser.mapSource).
@@ -66,6 +59,17 @@ object day05 extends App {
       combine(temperatureToHumidity).
       combine(humidityToLocation)
 
+    // The seeds coerced into a Page in order to exploit the combine() method to get the final answer
+    val seedRangeStarts = seeds.zipWithIndex.flatMap(s => {
+      if (s._2 % 2 == 0) Some(s._1) else None
+    })
+    val seedRangeLengths = seeds.zipWithIndex.flatMap(s => {
+      if (s._2 % 2 == 1) Some(s._1) else None
+    })
+    val seeds2: Page = Page(seedRangeStarts.zip(seedRangeLengths).map(sl => {
+      SDMap(Seq(sl._1, sl._1, sl._2))
+    }))
+
     val answer2 = seeds2.combine(seedToLocation).sDMap.map(x => x.targetStart).min
 
     (answer1, answer2)
@@ -77,6 +81,7 @@ object day05 extends App {
 
 }
 
+// Source-destination mappings
 case class SDMap(threeNumbers: Seq[BigInt]) {
   val sourceStart: BigInt = threeNumbers(1)
   val sourceEnd: BigInt = threeNumbers(1) + threeNumbers(2)
@@ -92,6 +97,7 @@ case class SDMap(threeNumbers: Seq[BigInt]) {
   }
 }
 
+// A Page of the Almanac, each containing every SDMap of a particular type, e.g. seed to fertiliser
 case class Page(sDMap: Seq[SDMap]) {
   def addMinMax(magicMinimum: BigInt, magicMaximum: BigInt): Page = {
     val minStart = this.sDMap.map(sd => sd.sourceStart).min
