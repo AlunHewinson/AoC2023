@@ -37,41 +37,23 @@ object day06 extends App {
     }
 
     @tailrec
-    def binarySearchLow(lo: BigInt, hi: BigInt, accum: (BigInt, BigInt)): (Boolean, BigInt, BigInt) = {
-      //println(s"lo: $lo   hi: $hi")
+    def binarySearch(lo: BigInt, hi: BigInt, accumulator: (BigInt, BigInt)): (Boolean, BigInt, BigInt) = {
       val testLo: Boolean = testWin(lo, duration2, record2)
       val testHi: Boolean = testWin(hi, duration2, record2)
       val testDf: BigInt = hi - lo
 
       (testLo, testHi, testDf) match {
         case (false, true, n) if n == 1 => (true, lo, hi)
-        case (false, true, n) => binarySearchLow(halfStep(lo, lo + (hi-lo)/2), halfStep(lo + (hi-lo)/2, hi), (lo, hi))
-        case (false, false, n) => binarySearchLow(hi, accum._2, (lo, hi))
-        case (true, true, n) => binarySearchLow(accum._1, lo, (lo, hi))
-        case (true, false, n) => (false, -1, -1)
+        case (false, true, _) => binarySearch(halfStep(lo, lo + (hi-lo)/2), halfStep(lo + (hi-lo)/2, hi), (lo, hi))
+        case (false, false, _) => binarySearch(hi, accumulator._2, (lo, hi))
+        case (true, true, _) => binarySearch(accumulator._1, lo, (lo, hi))
+        case (true, false, _) => (false, -1, -1)
       }
     }
 
-    @tailrec
-    def binarySearchHigh(lo: BigInt, hi: BigInt, accum: (BigInt, BigInt)): (Boolean, BigInt, BigInt) = {
-      //println(s"lo: $lo   hi: $hi")
-      val testLo: Boolean = testWin(lo, duration2, record2)
-      val testHi: Boolean = testWin(hi, duration2, record2)
-      val testDf: BigInt = hi - lo
+    val lowWin = binarySearch(0, duration2/2, (0, duration2/2))._3
 
-      (testLo, testHi, testDf) match {
-        case (true, false, n) if n == 1 => (true, lo, hi)
-        case (true, false, n) => binarySearchHigh(halfStep(lo, lo + (hi-lo)/2), halfStep(lo + (hi-lo)/2, hi), (lo, hi))
-        case (true, true, n) => binarySearchHigh(hi, accum._2, (lo, hi))
-        case (false, false, n) => binarySearchHigh(accum._1, lo, (lo, hi))
-        case (false, true, n) => (false, -1, -1)
-      }
-    }
-
-    val lowWin = binarySearchLow(0, duration2/2, (0, duration2/2))._3
-    val highWin = binarySearchHigh(duration2/2, duration2, (duration2/2, duration2))._2
-
-    val answer2 = 1 + highWin - lowWin
+    val answer2 = duration2 + 1 - lowWin * 2
 
     (answer1, answer2)
 
