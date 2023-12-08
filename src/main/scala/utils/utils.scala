@@ -39,12 +39,26 @@ object utils {
   )
 
   @tailrec
-  def gcd(a: Int, b: Int): Int = {
-    if (b==0) a.abs else gcd(b, a%b)
+  def gcd(a: BigInt, b: BigInt): BigInt = {
+    if (b==0) a.abs else gcd(b, a % b)
   }
 
-  def lcm(a: Int, b: Int): Int = {
-    (a*b).abs/gcd(a,b)
+  def gcd(numbers: Array[BigInt]): BigInt = {
+    def gcdInner(a: BigInt, b: BigInt): BigInt = {
+      if (b == 0) a.abs else gcdInner(b, a % b)
+    }
+    numbers.reduceLeft((acc, num) => gcdInner(acc, num))
+  }
+
+  def lcm(a: BigInt, b: BigInt): BigInt = {
+    (a * b).abs / gcd(a, b)
+  }
+
+  def lcm(numbers: Array[BigInt]): BigInt = {
+    def lcmInner(a: BigInt, b: BigInt): BigInt = {
+      (a * b).abs / gcd(a, b)
+    }
+    numbers.reduceLeft((acc, num) => lcmInner(acc, num))
   }
 
   case class Coord(row: Int, column: Int) {
