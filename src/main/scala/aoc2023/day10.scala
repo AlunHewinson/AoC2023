@@ -1,6 +1,7 @@
 package aoc2023
 
 import utils.utils.readDay
+import utils.Address
 import scala.annotation.tailrec
 import math.ceil
 
@@ -38,12 +39,12 @@ object day10 extends App {
 
 }
 
-case class Address(r: Int, c: Int) {
-  def east(): Address  = Address(this.r, this.c + 1)
-  def south(): Address = Address(this.r + 1, this.c)
-  def west(): Address  = Address(this.r, this.c - 1)
-  def north(): Address = Address(this.r - 1, this.c)
-}
+//case class Address(r: Int, c: Int) {
+//  def east(): Address  = Address(this.r, this.c + 1)
+//  def south(): Address = Address(this.r + 1, this.c)
+//  def west(): Address  = Address(this.r, this.c - 1)
+//  def north(): Address = Address(this.r - 1, this.c)
+//}
 
 case class Cell(address: Address, component: Char, milestone: Int) {
   def show(): Unit = {
@@ -151,6 +152,7 @@ case class Grid(cells: Seq[Cell], internal: Seq[Boolean] = Seq()) {
   @tailrec
   final def stepMany(): Grid = {
     val newGrid = this.stepOnce()
+    val yo = Seq(0)
     if (newGrid == this) newGrid
     else newGrid.stepMany()
   }

@@ -3,6 +3,7 @@ package utils
 import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
+import scala.math.abs
 
 object utils {
   def readDay(day: Int, test: Boolean = false, year: Int): String = {
@@ -85,17 +86,33 @@ object utils {
       }
     }
     final def repeatedlyAdd(other: Coord, times: Int = 1): Coord = {
-//      println("vvvvvvv")
-//      println(this)
-//      println(other)
-//      println(times)
-//      println(this add other)
-//      println("^^^^^^^")
       if (times == 0) this
       else if (times == 1) this add other
       else this.repeatedlyAdd(other, times - 1) add other
     }
   }
 
+}
 
+case class Address(r: Int, c: Int) {
+  def show(): Unit = {
+    println((r, c))
+  }
+  def east(): Address  = Address(this.r, this.c + 1)
+  def south(): Address = Address(this.r + 1, this.c)
+  def west(): Address  = Address(this.r, this.c - 1)
+  def north(): Address = Address(this.r - 1, this.c)
+
+  def expandedManhattenDistance(that: Address, expandedRowWeights: Seq[(Int, BigInt)], expandedColumnWeights: Seq[(Int, BigInt)]): BigInt = {
+    val rs = Seq(this.r, that.r).sorted
+    val cs = Seq(this.c, that.c).sorted
+
+    val relevantExpandingRows = expandedRowWeights.filter(rw => rw._1 > rs.head & rw._1 < rs.last)
+    val relevantExpandingColumns = expandedColumnWeights.filter(cw => cw._1 > cs.head & cw._1 < cs.last)
+
+    val distance = rs.last - rs.head + relevantExpandingRows.map(er => er._2).sum +
+      cs.last - cs.head + relevantExpandingColumns.map(ec => ec._2).sum
+    
+    distance
+  }
 }
