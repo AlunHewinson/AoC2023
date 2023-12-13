@@ -112,7 +112,7 @@ case class Address(r: Int, c: Int) {
 
     val distance = rs.last - rs.head + relevantExpandingRows.map(er => er._2).sum +
       cs.last - cs.head + relevantExpandingColumns.map(ec => ec._2).sum
-    
+
     distance
   }
 }
