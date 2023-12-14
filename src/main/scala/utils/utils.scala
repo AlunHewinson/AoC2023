@@ -37,8 +37,7 @@ object utils {
       Using(Source.fromFile(inputFileOldStyle)) { source => source.mkString }.get
     } catch {
       case noNewer: Throwable => {
-        throw new FileNotFoundException()
-        ""
+        throw new FileNotFoundException(s"input/$year/day$day$test.txt")
       }
     }
   }
