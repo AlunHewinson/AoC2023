@@ -1,5 +1,6 @@
 package utils
 
+import java.io.FileNotFoundException
 import scala.annotation.tailrec
 import scala.io.Source
 import scala.util.Using
@@ -25,6 +26,19 @@ object utils {
             ""
           }
         }
+      }
+    }
+  }
+
+  def readDay(day: Int, test: String, year: Int): String = {
+    val inputFileOldStyle: String = s"input/$year/day$day$test.txt"
+
+    try {
+      Using(Source.fromFile(inputFileOldStyle)) { source => source.mkString }.get
+    } catch {
+      case noNewer: Throwable => {
+        throw new FileNotFoundException()
+        ""
       }
     }
   }
@@ -60,6 +74,27 @@ object utils {
       (a * b).abs / gcd(a, b)
     }
     numbers.reduceLeft((acc, num) => lcmInner(acc, num))
+  }
+
+  import java.io.File
+  import java.nio.file.{Paths, Files}
+
+  def createEmptyTextFiles(year: Int) = {
+    (1 to 25).map(day => {
+      val filePath = s"input/$year/$day.txt"
+      val file = new File(filePath)
+
+      try {
+        if (!file.exists()) {
+          Files.createFile(Paths.get(filePath))
+          println(s"Created $year day $day successfully")
+        } else {
+          println(s"$year day $day already exists.")
+        }
+      } catch {
+        case e: Exception => println("An error occurred: " + e.getMessage)
+      }
+    })
   }
 
   case class Coord(row: Int, column: Int) {
