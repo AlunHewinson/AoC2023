@@ -128,14 +128,20 @@ object utils {
 
 }
 
+case class BigAddress(r: BigInt, c: BigInt) {
+  def east(n: BigInt = 1): BigAddress = BigAddress(this.r, this.c + n)
+  def south(n: BigInt = 1): BigAddress = BigAddress(this.r + n, this.c)
+  def west(n: BigInt = 1): BigAddress = BigAddress(this.r, this.c - n)
+  def north(n: BigInt = 1): BigAddress = BigAddress(this.r - n, this.c)
+}
 case class Address(r: Int, c: Int) {
   def show(): Unit = {
     println((r, c))
   }
-  def east(): Address  = Address(this.r, this.c + 1)
-  def south(): Address = Address(this.r + 1, this.c)
-  def west(): Address  = Address(this.r, this.c - 1)
-  def north(): Address = Address(this.r - 1, this.c)
+  def east(n: Int = 1): Address  = Address(this.r, this.c + n)
+  def south(n: Int = 1): Address = Address(this.r + n, this.c)
+  def west(n: Int = 1): Address  = Address(this.r, this.c - n)
+  def north(n: Int = 1): Address = Address(this.r - n, this.c)
 
   def expandedManhattenDistance(that: Address, expandedRowWeights: Seq[(Int, BigInt)], expandedColumnWeights: Seq[(Int, BigInt)]): BigInt = {
     val rs = Seq(this.r, that.r).sorted
